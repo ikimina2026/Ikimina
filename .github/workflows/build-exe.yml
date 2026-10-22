@@ -9,12 +9,28 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: Create App
+      - name: Create App Files
         run: |
           mkdir app
           cd app
-          echo {"name":"ikimina-2026","version":"3.0.0","main":"main.js"} > package.json
-          echo const { app, BrowserWindow } = require('electron'); function createWindow(){ const win=new BrowserWindow({width:1280,height:800}); win.loadURL('https://ikimina2026.github.io/Ikimina/');} app.whenReady().then(createWindow); > main.js
+          @"
+          {
+            "name": "ikimina-2026",
+            "version": "3.0.0",
+            "main": "main.js",
+            "scripts": {
+              "build": "electron-builder --win --publish=never"
+            }
+          }
+          "@ | Out-File -Encoding utf8 package.json
+          @"
+          const { app, BrowserWindow } = require('electron');
+          function createWindow() {
+            const win = new BrowserWindow({ width: 1280, height: 800 });
+            win.loadURL('https://ikimina2026.github.io/Ikimina/');
+          }
+          app.whenReady().then(createWindow);
+          "@ | Out-File -Encoding utf8 main.js
           npm install electron electron-builder --save-dev
       - name: Build EXE
         run: |
